@@ -66,7 +66,7 @@ async function fetchTranscript(videoId) {
 
   try {
     // 1단계 ─ 프록시 호출(JSON 형태)
-    const proxyRes = await fetch(`https://yt-subtitle.akashdeep.workers.dev/?id=${videoId}`);
+    const proxyRes = await fetch(`/proxy-subtitle/${videoId}`);
     if (!proxyRes.ok) throw new Error("프록시 응답 실패");
     const proxyJson = await proxyRes.json();
 
