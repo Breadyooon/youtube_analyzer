@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from youtube_transcript_api import YouTubeTranscriptApi
 import requests  # ✅ 추가: 외부 요청용
 import os
 
