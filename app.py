@@ -38,17 +38,19 @@ def get_transcript():
 @app.route("/proxy-subtitle/<video_id>")
 def proxy_subtitle(video_id):
     try:
-        # 1단계 ─ JSON 주소
+        print(f"[프록시 요청 시작] video_id: {video_id}")
         url = f"https://yt-subtitle.akashdeep.workers.dev/?id={video_id}"
+        print(f"[외부 요청] {url}")
         json_resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+        print(f"[응답 상태] {json_resp.status_code}")
         json_data = json_resp.json()
-        base_url = json_data["data"][0]["base_url"]
 
-        # 2단계 ─ 자막 XML 요청
+        base_url = json_data["data"][0]["base_url"]
+        print(f"[base_url 추출] {base_url}")
+
         xml_resp = requests.get(base_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
         xml_text = xml_resp.text
 
-        # 3단계 ─ <text> 태그 파싱
         import xml.etree.ElementTree as ET
         root = ET.fromstring(xml_text)
         lines = [el.text for el in root.findall("text") if el.text]
@@ -56,6 +58,7 @@ def proxy_subtitle(video_id):
 
         return jsonify({"transcript": text})
     except Exception as e:
+        print(f"[에러 발생] {str(e)}")  # 🔴 여기 로그 확인!
         return jsonify({"error": str(e)}), 500
 
 # ✅ Render 포트에 맞춰서 실행
