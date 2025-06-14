@@ -24,6 +24,15 @@ function resetForm() {
   document.getElementById("resultSection").classList.add("hidden");
   document.getElementById("resultSection").innerHTML = "";
 }
+function parseYoutubeSubtitleXML(xmlString) {
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(xmlString, "text/xml");
+  return Array.from(doc.getElementsByTagName("text"))
+              .map(node => node.textContent
+                  .replace(/&#39;/g, "'")
+                  .replace(/&quot;/g, '"'))
+              .join("\n");
+}
 
 // =================== 모달 관련 ===================
 function openModal(videoId, title, views, likes, comments) {
