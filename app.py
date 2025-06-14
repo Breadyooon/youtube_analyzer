@@ -33,5 +33,7 @@ def get_transcript():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+# ✅ Render 포트에 맞춰서 실행
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Render가 제공하는 포트를 사용
+    app.run(host="0.0.0.0", port=port)
