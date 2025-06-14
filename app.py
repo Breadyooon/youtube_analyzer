@@ -40,12 +40,15 @@ def proxy_subtitle(video_id):
     try:
         url = f"https://yt-subtitle.akashdeep.workers.dev/?id={video_id}"
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0"
         }
-        resp = requests.get(url, headers=headers)
+        print(f"[요청 시작] {url}")
+        resp = requests.get(url, headers=headers, timeout=5)
+        print(f"[응답 코드] {resp.status_code}")
         json_data = resp.json()
         return jsonify(json_data)
     except Exception as e:
+        print(f"[에러 발생] {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ✅ Render 포트에 맞춰서 실행
