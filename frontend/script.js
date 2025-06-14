@@ -1,5 +1,3 @@
-script.js (최종백업)
-
 // =================== 전역 설정 ===================
 const API_KEY = "AIzaSyAha_6aQl5ph9YMBh9Pa9UwhxJ8aLALDlE";
 
