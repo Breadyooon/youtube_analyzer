@@ -54,19 +54,25 @@ function handleBackdropClick(e) {
 async function fetchTranscript(videoId) {
   const transcriptEl = document.getElementById("videoTranscript");
   transcriptEl.textContent = "대본을 불러오는 중입니다...";
+
   try {
-    const res = await fetch(`https://yt-subtitle.akashdeep.workers.dev/?id=${videoId}`);
-    if (!res.ok) throw new Error("자막 서버 응답 실패");
+    // 1단계 ─ 프록시 호출(JSON 형태)
+    const proxyRes = await fetch(`https://yt-subtitle.akashdeep.workers.dev/?id=${videoId}`);
+    if (!proxyRes.ok) throw new Error("프록시 응답 실패");
+    const proxyJson = await proxyRes.json();
 
-    const data = await res.text();
+    // 2단계 ─ base_url 추출
+    const baseUrl = proxyJson?.data?.[0]?.base_url;
+    if (!baseUrl) throw new Error("base_url을 찾지 못했습니다");
 
-    // 자막이 JSON 형식일 경우 파싱 (일부 프록시 버전은 text/plain이 아니라 JSON 반환 가능)
-    try {
-      const parsed = JSON.parse(data);
-      transcriptEl.textContent = parsed.map(i => i.text).join("\n") || "자막이 없습니다.";
-    } catch {
-      transcriptEl.textContent = data || "자막이 없습니다.";
-    }
+    // 3단계 ─ 자막 XML 가져오기
+    const xmlRes = await fetch(baseUrl);
+    if (!xmlRes.ok) throw new Error("자막 XML 응답 실패");
+    const xmlText = await xmlRes.text();
+
+    // 4단계 ─ XML 파싱 → 텍스트
+    const transcript = parseYoutubeSubtitleXML(xmlText);
+    transcriptEl.textContent = transcript || "자막이 없습니다.";
   } catch (err) {
     console.error(err);
     transcriptEl.textContent = "❗ 자막을 불러올 수 없습니다.";
