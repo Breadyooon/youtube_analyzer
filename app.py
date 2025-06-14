@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from youtube_transcript_api import YouTubeTranscriptApi
+import requests  # ✅ 추가: 외부 요청용
 import os
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
@@ -19,7 +20,7 @@ def extract_video_id(url):
 def index():
     return send_from_directory("frontend", "index.html")
 
-# 자막 추출 API
+# 자막 추출 API (youtube_transcript_api 사용)
 @app.route("/transcript", methods=["POST"])
 def get_transcript():
     try:
@@ -33,7 +34,20 @@ def get_transcript():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+# ✅ 추가: 외부 프록시 서버 중계
+@app.route("/proxy-subtitle/<video_id>")
+def proxy_subtitle(video_id):
+    try:
+        url = f"https://yt-subtitle.akashdeep.workers.dev/?id={video_id}"
+        resp = requests.get(url)
+        return resp.text, resp.status_code, {
+            'Content-Type': resp.headers.get('Content-Type', 'text/plain'),
+            'Access-Control-Allow-Origin': '*'
+        }
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # ✅ Render 포트에 맞춰서 실행
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render가 제공하는 포트를 사용
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
