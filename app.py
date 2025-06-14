@@ -45,9 +45,14 @@ def proxy_subtitle(video_id):
         print(f"[응답 상태] {json_resp.status_code}")
         json_data = json_resp.json()
 
-        base_url = json_data["data"][0]["base_url"]
-        print(f"[base_url 추출] {base_url}")
+        if "data" not in json_data or not json_data["data"]:
+            raise ValueError("자막 데이터가 비어있습니다.")
 
+        base_url = json_data["data"][0].get("base_url")
+        if not base_url:
+            raise ValueError("base_url을 찾지 못했습니다.")
+
+        print(f"[base_url 추출] {base_url}")
         xml_resp = requests.get(base_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
         xml_text = xml_resp.text
 
@@ -58,10 +63,10 @@ def proxy_subtitle(video_id):
 
         return jsonify({"transcript": text})
     except Exception as e:
-        print(f"[에러 발생] {str(e)}")  # 🔴 여기 로그 확인!
+        print(f"[에러 발생] {repr(e)}")  # ❗이 로그 반드시 콘솔에 떠야 합니다
         return jsonify({"error": str(e)}), 500
 
 # ✅ Render 포트에 맞춰서 실행
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)  # debug 꼭 넣어주세요
