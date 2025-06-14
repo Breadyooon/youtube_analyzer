@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>유튜브 숏츠 분석기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-white text-gray-800 font-sans">
+  <div class="max-w-5xl mx-auto mt-20 px-4">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">유튜브 숏츠 분석기</h1>
+    <p class="mb-6 text-gray-700">60초 이하 유튜브 숏츠 영상의 성과를 분석합니다.</p>
+
+    <div class="bg-gray-100 p-6 rounded-md shadow">
+      <label class="block mb-3 font-semibold text-lg">채널 ID 또는 커스텀 URL 입력:</label>
+      <input id="channelInput" type="text" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="예: https://www.youtube.com/@username 또는 https://www.youtube.com/channel/UCxxxxx" />
+      <div class="flex gap-2">
+        <button onclick="analyze()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded">분석하기</button>
+        <button onclick="resetForm()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded">초기화</button>
+      </div>
+    </div>
+
+    <div id="resultSection" class="mt-10 hidden"></div>
+  </div>
+
+  <!-- 영상 모달 -->
+  <div id="videoModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden items-center justify-center" onclick="handleBackdropClick(event)">
+    <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full p-4 relative" onclick="event.stopPropagation()">
+      <button onclick="closeModal()" class="absolute top-3 right-4 text-gray-600 text-xl">&times;</button>
+      <h2 id="modalTitle" class="text-xl font-bold mb-4">영상 제목</h2>
+<div id="modalStats" class="flex items-center gap-4 text-sm text-gray-600 mb-4"></div>
+      <div id="modalVideo" class="w-full aspect-video bg-black mb-4"></div>
+      <button id="fetchTranscriptBtn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded mb-4" onclick="fetchTranscript(currentModalVideoId)">대본 가져오기</button>
+      <div>
+        <h3 class="font-bold text-sm mb-2">영상 원본 대본</h3>
+        <div id="videoTranscript" class="border rounded p-3 bg-gray-50 text-sm text-gray-800 min-h-[100px] max-h-[300px] overflow-y-auto whitespace-pre-line">원본 대본이 여기에 표시됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로딩 모달 -->
+  <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-md shadow-lg text-center">
+      <i class="fas fa-spinner fa-spin text-2xl text-red-500 mb-4"></i>
+      <p class="text-lg font-semibold">분석 중입니다...</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
