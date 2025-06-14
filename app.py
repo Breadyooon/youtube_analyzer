@@ -40,10 +40,8 @@ def proxy_subtitle(video_id):
     try:
         url = f"https://yt-subtitle.akashdeep.workers.dev/?id={video_id}"
         resp = requests.get(url)
-        return resp.text, resp.status_code, {
-            'Content-Type': resp.headers.get('Content-Type', 'text/plain'),
-            'Access-Control-Allow-Origin': '*'
-        }
+        json_data = resp.json()  # ✅ 반드시 JSON 파싱
+        return jsonify(json_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
