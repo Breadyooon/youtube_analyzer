@@ -39,8 +39,11 @@ def get_transcript():
 def proxy_subtitle(video_id):
     try:
         url = f"https://yt-subtitle.akashdeep.workers.dev/?id={video_id}"
-        resp = requests.get(url)
-        json_data = resp.json()  # ✅ 반드시 JSON 파싱
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36"
+        }
+        resp = requests.get(url, headers=headers)
+        json_data = resp.json()
         return jsonify(json_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
